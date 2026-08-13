@@ -13,5 +13,5 @@
 - [x] Save model
 - [x] Evaluation
 - [x] Prediction visualization
-- [ ] Inference
+- [x] Inference
 - [ ] Fine-tuning

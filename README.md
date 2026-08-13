@@ -15,6 +15,7 @@ and pencils.
 - `src/train.py` — explicit training and validation loops.
 - `src/device.py` — CUDA, MPS, and CPU device selection.
 - `src/evaluate.py` — accuracy, precision, recall, F1, and confusion matrix.
+- `src/inference.py` — reusable single-image prediction function.
 - `requirements.txt` — Python dependencies for the project environment.
 - `PLAN.md` — checklist of the incremental learning steps.
 - `TASKS.md` — detailed project requirements.
@@ -155,3 +156,12 @@ values show which classes the model confuses most often. Precision measures
 how many predictions of a class were correct, recall measures how many actual
 examples of a class were found, and F1 combines the two. These metrics prevent
 class performance from being hidden by accuracy alone.
+
+## Single-image inference
+
+`src/inference.py` provides `predict_image`, which returns the predicted class,
+the probability for every class, and the confidence of the selected class. It
+calls `model.eval()` so dropout and batch-normalization use inference behavior
+rather than training behavior. It uses `torch.no_grad()` because inference
+does not update parameters; avoiding a gradient graph saves memory and
+computation. The command-line wrapper is added in a later step.
