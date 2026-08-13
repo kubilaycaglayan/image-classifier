@@ -30,6 +30,8 @@ Explain important ML concepts before implementing them.
 
 Do not introduce unnecessary dependencies.
 
+Commit and push regularly after each step.
+
 ## Architecture
 
 Reusable implementation belongs in `src/`.
@@ -62,6 +64,7 @@ Before moving to the next major step:
 3. Verify that it works.
 4. Explain important concepts.
 5. Show relevant results.
+6. Commit and push.
 
 Do not generate the entire project at once.
 
