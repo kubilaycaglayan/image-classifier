@@ -9,6 +9,7 @@
 - [x] ResNet
 - [x] Forward pass
 - [x] Training loop
+- [x] Hardware
 - [ ] Evaluation
 - [ ] Inference
 - [ ] Fine-tuning

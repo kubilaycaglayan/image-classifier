@@ -13,6 +13,7 @@ and pencils.
 - `src/model.py` — pretrained ResNet18 construction and classifier replacement.
 - `src/forward_pass.py` — one-batch forward-pass demonstration.
 - `src/train.py` — explicit training and validation loops.
+- `src/device.py` — CUDA, MPS, and CPU device selection.
 - `src/evaluate.py` — evaluation and metrics code (later step).
 - `requirements.txt` — Python dependencies for the project environment.
 - `PLAN.md` — checklist of the incremental learning steps.
@@ -110,7 +111,15 @@ The reported loss measures how far the logits are from the correct labels;
 lower is generally better. Accuracy is the fraction of correctly classified
 images. Training metrics describe the data used for updates, while validation
 metrics measure generalization on held-out data. The training loop accepts an
-explicit device; automatic hardware selection is handled in the next step.
+explicit device, and the command-line entry point selects the best available
+backend automatically.
+
+## Hardware selection
+
+`src/device.py` checks for CUDA first, then Apple Silicon MPS, and falls back to
+the CPU. The selected device is printed at the start of a command-line
+training run. The explicit order makes the choice visible and avoids assuming
+that every machine has CUDA.
 
 ## Environment
 

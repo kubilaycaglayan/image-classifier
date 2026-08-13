@@ -11,6 +11,7 @@ from torch.optim import Adam, Optimizer
 from torch.utils.data import DataLoader
 
 from src.dataset import DEFAULT_TRAIN_DIR, DEFAULT_VALIDATION_DIR, create_dataloaders
+from src.device import select_device
 from src.model import create_model
 
 
@@ -85,8 +86,8 @@ def train_model(
 ) -> dict[str, list[float]]:
     """Train ``model`` and print train/validation metrics after each epoch.
 
-    The device is explicit here. Automatic CUDA/MPS/CPU selection belongs to
-    the next hardware step, so callers can pass the selected device later.
+    The device is explicit here so the loop remains easy to inspect and test.
+    The command-line entry point selects CUDA, MPS, or CPU automatically.
     """
 
     if epochs < 1:
@@ -154,7 +155,6 @@ def main() -> None:
     parser.add_argument("--num-workers", type=int, default=0)
     parser.add_argument("--epochs", type=int, default=5)
     parser.add_argument("--learning-rate", type=float, default=1e-3)
-    parser.add_argument("--device", default="cpu")
     parser.add_argument("--without-pretrained-weights", action="store_true")
     args = parser.parse_args()
 
@@ -165,13 +165,14 @@ def main() -> None:
         num_workers=args.num_workers,
     )
     model = create_model(pretrained=not args.without_pretrained_weights)
+    device = select_device()
     train_model(
         model,
         train_loader,
         validation_loader,
         epochs=args.epochs,
         learning_rate=args.learning_rate,
-        device=args.device,
+        device=device,
     )
 
 
