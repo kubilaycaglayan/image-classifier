@@ -14,7 +14,7 @@ and pencils.
 - `src/forward_pass.py` — one-batch forward-pass demonstration.
 - `src/train.py` — explicit training and validation loops.
 - `src/device.py` — CUDA, MPS, and CPU device selection.
-- `src/evaluate.py` — evaluation and metrics code (later step).
+- `src/evaluate.py` — accuracy, precision, recall, F1, and confusion matrix.
 - `requirements.txt` — Python dependencies for the project environment.
 - `PLAN.md` — checklist of the incremental learning steps.
 - `TASKS.md` — detailed project requirements.
@@ -145,3 +145,13 @@ python -m pip install -r requirements.txt
 The environment is kept out of version control. The project uses the standard
 Python packages listed in `requirements.txt`; PyTorch selects the available
 hardware at runtime in later steps.
+
+## Evaluation metrics
+
+`src/evaluate.py` reports accuracy plus macro precision, recall, and F1, along
+with each class's individual scores. It also displays a confusion matrix:
+rows are actual classes and columns are predicted classes. Large off-diagonal
+values show which classes the model confuses most often. Precision measures
+how many predictions of a class were correct, recall measures how many actual
+examples of a class were found, and F1 combines the two. These metrics prevent
+class performance from being hidden by accuracy alone.

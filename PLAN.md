@@ -11,6 +11,6 @@
 - [x] Training loop
 - [x] Hardware
 - [x] Save model
-- [ ] Evaluation
+- [x] Evaluation
 - [ ] Inference
 - [ ] Fine-tuning
