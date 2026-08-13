@@ -3,7 +3,7 @@
 - [x] Project structure
 - [x] Environment
 - [x] Dataset
-- [ ] Data exploration
+- [x] Data exploration
 - [ ] Transformations
 - [ ] DataLoader
 - [ ] ResNet
