@@ -148,6 +148,47 @@ The environment is kept out of version control. The project uses the standard
 Python packages listed in `requirements.txt`; PyTorch selects the available
 hardware at runtime in later steps.
 
+## Running training
+
+From the project root, activate the virtual environment and run the training
+script as a module:
+
+```bash
+cd /home/ubuntu/projects/image-classifier
+source .venv/bin/activate
+python -m src.train
+```
+
+The default training command uses:
+
+- Training data: `data/train/`
+- Validation data: `data/validation/`
+- 5 epochs
+- Batch size: 32
+- Learning rate: `0.001`
+- A pretrained ResNet18 with the backbone frozen
+- Best checkpoint: `models/best_model.pth`
+
+For a slightly longer baseline run:
+
+```bash
+python -m src.train --epochs 10 --batch-size 16
+```
+
+For fine-tuning the final ResNet block:
+
+```bash
+python -m src.train \
+    --epochs 10 \
+    --fine-tune \
+    --learning-rate 1e-3 \
+    --backbone-learning-rate 1e-4
+```
+
+Use `python -m src.train` instead of `python src/train.py` because the script
+imports the `src` package. On the first run, torchvision may download the
+pretrained ResNet18 weights.
+
 ## Evaluation metrics
 
 `src/evaluate.py` reports accuracy plus macro precision, recall, and F1, along
