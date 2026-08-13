@@ -6,7 +6,7 @@
 - [x] Data exploration
 - [x] Transformations
 - [x] DataLoader
-- [ ] ResNet
+- [x] ResNet
 - [ ] Forward pass
 - [ ] Training loop
 - [ ] Evaluation

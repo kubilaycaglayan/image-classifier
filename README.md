@@ -10,7 +10,7 @@ and pencils.
 - `notebooks/exploration.ipynb` — interactive data exploration and visual analysis.
 - `src/dataset.py` — reusable dataset and data-loading code (later step).
 - `src/transforms.py` — separate training and validation image transformations.
-- `src/model.py` — model construction code (later step).
+- `src/model.py` — pretrained ResNet18 construction and classifier replacement.
 - `src/train.py` — training-loop code (later step).
 - `src/evaluate.py` — evaluation and metrics code (later step).
 - `requirements.txt` — Python dependencies for the project environment.
@@ -73,6 +73,21 @@ channels, and 224 pixels in both height and width. Inspect a batch with:
 ```bash
 python -m src.dataset --batch-size 32 --num-workers 0
 ```
+
+## Transfer-learning model
+
+`src/model.py` creates a pretrained ResNet18. ResNet is a convolutional neural
+network architecture with residual connections that help information and
+gradients pass through many layers. The pretrained weights were learned on
+ImageNet, a large labeled image dataset, so the network already contains
+general visual features such as edges, textures, and shapes.
+
+This is transfer learning: we reuse those learned features for the bottle,
+pencil, and wristwatch task. The original final layer is replaced with a new
+linear layer whose output has exactly three values, one logit per class. The
+pretrained layers are frozen initially, so only this new classification layer
+is trained. The output values are logits, not probabilities; the later loss
+and inference steps will explain how to use them.
 
 ## Environment
 
