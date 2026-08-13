@@ -5,7 +5,7 @@
 - [x] Dataset
 - [x] Data exploration
 - [x] Transformations
-- [ ] DataLoader
+- [x] DataLoader
 - [ ] ResNet
 - [ ] Forward pass
 - [ ] Training loop

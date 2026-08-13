@@ -47,8 +47,8 @@ python -m src.dataset
 ```
 
 The training and validation directories must contain the same three class
-folders. Image transformations and `DataLoader` batching will be added in
-later steps.
+folders. `src/dataset.py` connects these datasets to the transformation
+pipelines and creates the `DataLoader`s used in later steps.
 
 ## Image transformations
 
@@ -58,6 +58,21 @@ the object without aggressively changing its identity. Validation images use a
 deterministic resize and center crop, so repeated evaluation sees the same
 input. Both pipelines convert images to tensors and normalize RGB channels
 with the mean and standard deviation used for ImageNet-pretrained models.
+
+## Dataset and DataLoader batching
+
+`src/dataset.py` creates a training `Dataset`, a validation `Dataset`, and one
+`DataLoader` for each. A `Dataset` represents individual image/label samples;
+a `DataLoader` groups them into batches. The training loader shuffles samples,
+while the validation loader does not, so validation is repeatable. `batch_size`
+and `num_workers` are configurable, with defaults of 32 and 0.
+
+For example, a batch shape of `[32, 3, 224, 224]` means 32 images, 3 RGB
+channels, and 224 pixels in both height and width. Inspect a batch with:
+
+```bash
+python -m src.dataset --batch-size 32 --num-workers 0
+```
 
 ## Environment
 
