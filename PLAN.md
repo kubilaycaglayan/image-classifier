@@ -12,5 +12,6 @@
 - [x] Hardware
 - [x] Save model
 - [x] Evaluation
+- [x] Prediction visualization
 - [ ] Inference
 - [ ] Fine-tuning
