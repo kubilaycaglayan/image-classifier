@@ -1,18 +1,4 @@
 # Learning Plan
 
-- [x] Project structure
-- [x] Environment
-- [x] Dataset
-- [x] Data exploration
-- [x] Transformations
-- [x] DataLoader
-- [x] ResNet
-- [x] Forward pass
-- [x] Training loop
-- [x] Hardware
-- [x] Save model
-- [x] Evaluation
-- [x] Prediction visualization
-- [x] Inference
-- [x] Fine-tuning
-- [x] Experiments
+- [x] Populate the dataset with public-source images, up to 50 images per class,
+  and record source and license metadata for review.
