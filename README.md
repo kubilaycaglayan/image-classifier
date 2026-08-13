@@ -18,3 +18,18 @@ and pencils.
 
 The source modules and notebook are intentionally placeholders at this stage.
 Model and training implementation will be added in later steps.
+
+## Environment
+
+Create and activate the project virtual environment, then install the declared
+dependencies:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+```
+
+The environment is kept out of version control. The project uses the standard
+Python packages listed in `requirements.txt`; PyTorch selects the available
+hardware at runtime in later steps.

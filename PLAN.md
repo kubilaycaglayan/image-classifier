@@ -1,7 +1,7 @@
 # Learning Plan
 
 - [x] Project structure
-- [ ] Environment
+- [x] Environment
 - [ ] Dataset
 - [ ] Data exploration
 - [ ] Transformations
