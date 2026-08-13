@@ -13,7 +13,7 @@ from torch.utils.data import DataLoader
 
 from src.dataset import DEFAULT_TRAIN_DIR, DEFAULT_VALIDATION_DIR, create_dataloaders
 from src.device import select_device
-from src.model import create_model
+from src.model import configure_fine_tuning, create_model
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -39,6 +39,45 @@ def save_checkpoint(
         path,
     )
     print(f"Saved best model checkpoint to: {path}")
+
+
+def create_optimizer(
+    model: nn.Module,
+    classifier_learning_rate: float,
+    backbone_learning_rate: float | None = None,
+) -> Optimizer:
+    """Create Adam, optionally assigning a smaller rate to the backbone."""
+
+    named_parameters = [
+        (name, parameter)
+        for name, parameter in model.named_parameters()
+        if parameter.requires_grad
+    ]
+    if not named_parameters:
+        raise ValueError("The model has no trainable parameters.")
+
+    if backbone_learning_rate is None:
+        return Adam([parameter for _, parameter in named_parameters], lr=classifier_learning_rate)
+
+    classifier_parameters = [
+        parameter for name, parameter in named_parameters if name.startswith("fc.")
+    ]
+    backbone_parameters = [
+        parameter for name, parameter in named_parameters if not name.startswith("fc.")
+    ]
+    if not classifier_parameters or not backbone_parameters:
+        raise ValueError(
+            "Differential learning rates require trainable classifier and "
+            "backbone parameters."
+        )
+
+    return Adam(
+        [
+            {"params": classifier_parameters, "lr": classifier_learning_rate},
+            {"params": backbone_parameters, "lr": backbone_learning_rate},
+        ],
+        lr=classifier_learning_rate,
+    )
 
 
 def train_one_epoch(
@@ -111,6 +150,7 @@ def train_model(
     device: str | torch.device = "cpu",
     class_to_idx: Mapping[str, int] | None = None,
     checkpoint_path: str | Path | None = None,
+    backbone_learning_rate: float | None = None,
 ) -> dict[str, list[float]]:
     """Train ``model`` and print train/validation metrics after each epoch.
 
@@ -126,19 +166,22 @@ def train_model(
         raise ValueError(
             f"learning_rate must be positive; received {learning_rate}."
         )
+    if backbone_learning_rate is not None and backbone_learning_rate <= 0:
+        raise ValueError(
+            "backbone_learning_rate must be positive when provided; "
+            f"received {backbone_learning_rate}."
+        )
     if checkpoint_path is not None and class_to_idx is None:
         raise ValueError("class_to_idx is required when saving a checkpoint.")
 
     selected_device = torch.device(device)
     model.to(selected_device)
-    trainable_parameters = [
-        parameter for parameter in model.parameters() if parameter.requires_grad
-    ]
-    if not trainable_parameters:
-        raise ValueError("The model has no trainable parameters.")
-
     loss_function = nn.CrossEntropyLoss()
-    optimizer = Adam(trainable_parameters, lr=learning_rate)
+    optimizer = create_optimizer(
+        model,
+        classifier_learning_rate=learning_rate,
+        backbone_learning_rate=backbone_learning_rate,
+    )
     history = {
         "training_loss": [],
         "training_accuracy": [],
@@ -201,6 +244,8 @@ def main() -> None:
     parser.add_argument("--num-workers", type=int, default=0)
     parser.add_argument("--epochs", type=int, default=5)
     parser.add_argument("--learning-rate", type=float, default=1e-3)
+    parser.add_argument("--fine-tune", action="store_true")
+    parser.add_argument("--backbone-learning-rate", type=float, default=1e-4)
     parser.add_argument(
         "--checkpoint-path",
         type=Path,
@@ -216,6 +261,10 @@ def main() -> None:
         num_workers=args.num_workers,
     )
     model = create_model(pretrained=not args.without_pretrained_weights)
+    backbone_learning_rate = None
+    if args.fine_tune:
+        configure_fine_tuning(model)
+        backbone_learning_rate = args.backbone_learning_rate
     device = select_device()
     train_model(
         model,
@@ -226,6 +275,7 @@ def main() -> None:
         device=device,
         class_to_idx=train_dataset.class_to_idx,
         checkpoint_path=args.checkpoint_path,
+        backbone_learning_rate=backbone_learning_rate,
     )
 
 

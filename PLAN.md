@@ -14,4 +14,4 @@
 - [x] Evaluation
 - [x] Prediction visualization
 - [x] Inference
-- [ ] Fine-tuning
+- [x] Fine-tuning

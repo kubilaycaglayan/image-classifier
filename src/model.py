@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+from collections.abc import Sequence
 
 from torch import nn
 from torchvision.models import ResNet18_Weights, resnet18
@@ -45,6 +46,35 @@ def trainable_parameter_names(model: nn.Module) -> list[str]:
         for name, parameter in model.named_parameters()
         if parameter.requires_grad
     ]
+
+
+def configure_fine_tuning(
+    model: nn.Module,
+    trainable_layers: Sequence[str] = ("layer4",),
+) -> list[str]:
+    """Freeze the backbone except for selected later layers and ``fc``.
+
+    The default unfreezes ResNet18's final residual block, ``layer4``. Earlier
+    blocks retain their general ImageNet features, while ``layer4`` and the
+    classifier can adapt to this project's object classes.
+    """
+
+    if not trainable_layers:
+        raise ValueError("trainable_layers must contain at least one layer.")
+
+    top_level_names = set(dict(model.named_children()))
+    unknown_layers = set(trainable_layers) - top_level_names
+    if unknown_layers:
+        raise ValueError(f"Unknown model layers: {sorted(unknown_layers)}.")
+
+    for name, parameter in model.named_parameters():
+        is_classifier = name.startswith("fc.")
+        is_selected_layer = any(
+            name.startswith(f"{layer_name}.") for layer_name in trainable_layers
+        )
+        parameter.requires_grad = is_classifier or is_selected_layer
+
+    return trainable_parameter_names(model)
 
 
 def main() -> None:

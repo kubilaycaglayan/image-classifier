@@ -165,3 +165,20 @@ calls `model.eval()` so dropout and batch-normalization use inference behavior
 rather than training behavior. It uses `torch.no_grad()` because inference
 does not update parameters; avoiding a gradient graph saves memory and
 computation. The command-line wrapper is added in a later step.
+
+## Fine-tuning experiment
+
+The baseline freezes the pretrained ResNet backbone and trains only `fc`, the
+new classifier. For a fine-tuning comparison, use `--fine-tune`; this keeps
+earlier ResNet blocks frozen, unfreezes the later `layer4` block, and gives the
+backbone a smaller learning rate than the classifier:
+
+```bash
+python -m src.train --fine-tune --learning-rate 1e-3 \
+    --backbone-learning-rate 1e-4
+```
+
+Fine-tuning can improve performance when general ImageNet features need to
+adapt to this dataset, but the smaller learning rate limits disruptive changes
+to useful pretrained representations. Compare the two runs using the recorded
+training and validation metrics rather than assuming fine-tuning is better.
