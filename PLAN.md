@@ -4,7 +4,7 @@
 - [x] Environment
 - [x] Dataset
 - [x] Data exploration
-- [ ] Transformations
+- [x] Transformations
 - [ ] DataLoader
 - [ ] ResNet
 - [ ] Forward pass

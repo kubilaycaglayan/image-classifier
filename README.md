@@ -9,6 +9,7 @@ and pencils.
 - `data/validation/` — validation images, using the same class directories.
 - `notebooks/exploration.ipynb` — interactive data exploration and visual analysis.
 - `src/dataset.py` — reusable dataset and data-loading code (later step).
+- `src/transforms.py` — separate training and validation image transformations.
 - `src/model.py` — model construction code (later step).
 - `src/train.py` — training-loop code (later step).
 - `src/evaluate.py` — evaluation and metrics code (later step).
@@ -48,6 +49,15 @@ python -m src.dataset
 The training and validation directories must contain the same three class
 folders. Image transformations and `DataLoader` batching will be added in
 later steps.
+
+## Image transformations
+
+`src/transforms.py` defines two pipelines. Training images use a moderate
+random resized crop and horizontal flip, which create plausible variations of
+the object without aggressively changing its identity. Validation images use a
+deterministic resize and center crop, so repeated evaluation sees the same
+input. Both pipelines convert images to tensors and normalize RGB channels
+with the mean and standard deviation used for ImageNet-pretrained models.
 
 ## Environment
 
