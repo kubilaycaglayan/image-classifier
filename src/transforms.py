@@ -7,6 +7,8 @@ images. Validation remains deterministic so its metrics measure the model,
 not random augmentation.
 """
 
+from typing import Literal
+
 from torchvision import transforms
 
 
@@ -16,8 +18,25 @@ IMAGENET_MEAN = (0.485, 0.456, 0.406)
 IMAGENET_STD = (0.229, 0.224, 0.225)
 
 
-def create_train_transform() -> transforms.Compose:
-    """Create the training pipeline with moderate image augmentation."""
+def create_train_transform(
+    augmentation: Literal["moderate", "none"] = "moderate",
+) -> transforms.Compose:
+    """Create a training pipeline for a named augmentation strategy."""
+
+    if augmentation == "none":
+        return transforms.Compose(
+            [
+                transforms.Resize(RESIZE_SIZE, antialias=True),
+                transforms.CenterCrop(IMAGE_SIZE),
+                transforms.ToTensor(),
+                transforms.Normalize(IMAGENET_MEAN, IMAGENET_STD),
+            ]
+        )
+    if augmentation != "moderate":
+        raise ValueError(
+            f"Unknown augmentation strategy {augmentation!r}; "
+            "choose 'moderate' or 'none'."
+        )
 
     return transforms.Compose(
         [

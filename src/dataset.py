@@ -68,6 +68,7 @@ def create_dataloaders(
     validation_dir: str | Path = DEFAULT_VALIDATION_DIR,
     batch_size: int = 32,
     num_workers: int = 0,
+    augmentation: str = "moderate",
 ) -> tuple[ImageFolder, ImageFolder, DataLoader, DataLoader]:
     """Create transformed datasets and their training/validation loaders.
 
@@ -87,7 +88,7 @@ def create_dataloaders(
     training_dataset, validation_dataset = load_datasets(
         train_dir=train_dir,
         validation_dir=validation_dir,
-        train_transform=create_train_transform(),
+        train_transform=create_train_transform(augmentation),
         validation_transform=create_validation_transform(),
     )
 

@@ -16,6 +16,7 @@ and pencils.
 - `src/device.py` — CUDA, MPS, and CPU device selection.
 - `src/evaluate.py` — accuracy, precision, recall, F1, and confusion matrix.
 - `src/inference.py` — reusable single-image prediction function.
+- `src/experiments.py` — controlled experiment configurations and CSV recording.
 - `requirements.txt` — Python dependencies for the project environment.
 - `PLAN.md` — checklist of the incremental learning steps.
 - `TASKS.md` — detailed project requirements.
@@ -165,6 +166,16 @@ calls `model.eval()` so dropout and batch-normalization use inference behavior
 rather than training behavior. It uses `torch.no_grad()` because inference
 does not update parameters; avoiding a gradient graph saves memory and
 computation. The command-line wrapper is added in a later step.
+
+## Dataset experiments
+
+`src/experiments.py` defines named experiments instead of changing settings
+without a hypothesis. It covers batch sizes, learning rates, augmentation,
+and epoch counts. Run `python -m src.experiments --list` to inspect the
+hypotheses, then run one configuration with `--experiment NAME`. Results are
+appended to `results/experiments.csv` with the configuration and final/best
+validation metrics, so runs can be compared later. Real results should only be
+recorded after the actual dataset has been added.
 
 ## Fine-tuning experiment
 
