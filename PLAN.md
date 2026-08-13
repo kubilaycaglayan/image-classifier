@@ -7,7 +7,7 @@
 - [x] Transformations
 - [x] DataLoader
 - [x] ResNet
-- [ ] Forward pass
+- [x] Forward pass
 - [ ] Training loop
 - [ ] Evaluation
 - [ ] Inference

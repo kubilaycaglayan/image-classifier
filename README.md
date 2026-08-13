@@ -11,6 +11,7 @@ and pencils.
 - `src/dataset.py` — reusable dataset and data-loading code (later step).
 - `src/transforms.py` — separate training and validation image transformations.
 - `src/model.py` — pretrained ResNet18 construction and classifier replacement.
+- `src/forward_pass.py` — one-batch forward-pass demonstration.
 - `src/train.py` — training-loop code (later step).
 - `src/evaluate.py` — evaluation and metrics code (later step).
 - `requirements.txt` — Python dependencies for the project environment.
@@ -88,6 +89,15 @@ linear layer whose output has exactly three values, one logit per class. The
 pretrained layers are frozen initially, so only this new classification layer
 is trained. The output values are logits, not probabilities; the later loss
 and inference steps will explain how to use them.
+
+## One forward pass
+
+`src/forward_pass.py` takes one batch from the training `DataLoader` and passes
+it through the model. The output is a matrix of logits: each row belongs to one
+image and its three values are the model's unnormalized scores for the three
+classes. `logits.argmax(dim=1)` selects the index of the largest score for each
+image, which gives the predicted class index. This step uses `model.eval()` and
+`torch.no_grad()` because it is an inspection pass, not parameter training.
 
 ## Environment
 
