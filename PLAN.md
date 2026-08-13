@@ -8,7 +8,7 @@
 - [x] DataLoader
 - [x] ResNet
 - [x] Forward pass
-- [ ] Training loop
+- [x] Training loop
 - [ ] Evaluation
 - [ ] Inference
 - [ ] Fine-tuning

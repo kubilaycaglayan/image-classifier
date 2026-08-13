@@ -12,7 +12,7 @@ and pencils.
 - `src/transforms.py` — separate training and validation image transformations.
 - `src/model.py` — pretrained ResNet18 construction and classifier replacement.
 - `src/forward_pass.py` — one-batch forward-pass demonstration.
-- `src/train.py` — training-loop code (later step).
+- `src/train.py` — explicit training and validation loops.
 - `src/evaluate.py` — evaluation and metrics code (later step).
 - `requirements.txt` — Python dependencies for the project environment.
 - `PLAN.md` — checklist of the incremental learning steps.
@@ -98,6 +98,19 @@ image and its three values are the model's unnormalized scores for the three
 classes. `logits.argmax(dim=1)` selects the index of the largest score for each
 image, which gives the predicted class index. This step uses `model.eval()` and
 `torch.no_grad()` because it is an inspection pass, not parameter training.
+
+## Training loop
+
+`src/train.py` implements the learning steps explicitly. For each training
+batch it moves images and labels to the device, clears old gradients, runs the
+forward pass, calculates `CrossEntropyLoss`, backpropagates with
+`loss.backward()`, and updates the trainable parameters with Adam.
+
+The reported loss measures how far the logits are from the correct labels;
+lower is generally better. Accuracy is the fraction of correctly classified
+images. Training metrics describe the data used for updates, while validation
+metrics measure generalization on held-out data. The training loop accepts an
+explicit device; automatic hardware selection is handled in the next step.
 
 ## Environment
 
