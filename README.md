@@ -121,6 +121,16 @@ the CPU. The selected device is printed at the start of a command-line
 training run. The explicit order makes the choice visible and avoids assuming
 that every machine has CUDA.
 
+## Saving the trained model
+
+The training command saves the best checkpoint to `models/best_model.pth` when
+validation accuracy improves. The checkpoint contains the model's
+`state_dict`, the validation accuracy that selected it, and the
+`class_to_idx` mapping used by `ImageFolder`. A `state_dict` stores parameter
+names and tensors without coupling the file to a serialized Python model
+object, making it easier to inspect and load into the explicitly constructed
+architecture later.
+
 ## Environment
 
 Create and activate the project virtual environment, then install the declared

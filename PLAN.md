@@ -10,6 +10,7 @@
 - [x] Forward pass
 - [x] Training loop
 - [x] Hardware
+- [x] Save model
 - [ ] Evaluation
 - [ ] Inference
 - [ ] Fine-tuning

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+from collections.abc import Mapping
 from pathlib import Path
 
 import torch
@@ -13,6 +14,31 @@ from torch.utils.data import DataLoader
 from src.dataset import DEFAULT_TRAIN_DIR, DEFAULT_VALIDATION_DIR, create_dataloaders
 from src.device import select_device
 from src.model import create_model
+
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+DEFAULT_CHECKPOINT_PATH = PROJECT_ROOT / "models" / "best_model.pth"
+
+
+def save_checkpoint(
+    model: nn.Module,
+    class_to_idx: Mapping[str, int],
+    validation_accuracy: float,
+    checkpoint_path: str | Path,
+) -> None:
+    """Save model weights, class mapping, and the score that selected them."""
+
+    path = Path(checkpoint_path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    torch.save(
+        {
+            "model_state_dict": model.state_dict(),
+            "class_to_idx": dict(class_to_idx),
+            "validation_accuracy": validation_accuracy,
+        },
+        path,
+    )
+    print(f"Saved best model checkpoint to: {path}")
 
 
 def train_one_epoch(
@@ -83,11 +109,15 @@ def train_model(
     epochs: int = 5,
     learning_rate: float = 1e-3,
     device: str | torch.device = "cpu",
+    class_to_idx: Mapping[str, int] | None = None,
+    checkpoint_path: str | Path | None = None,
 ) -> dict[str, list[float]]:
     """Train ``model`` and print train/validation metrics after each epoch.
 
     The device is explicit here so the loop remains easy to inspect and test.
     The command-line entry point selects CUDA, MPS, or CPU automatically.
+    When ``checkpoint_path`` is provided, a checkpoint is written whenever
+    validation accuracy improves. The class mapping must be provided with it.
     """
 
     if epochs < 1:
@@ -96,6 +126,8 @@ def train_model(
         raise ValueError(
             f"learning_rate must be positive; received {learning_rate}."
         )
+    if checkpoint_path is not None and class_to_idx is None:
+        raise ValueError("class_to_idx is required when saving a checkpoint.")
 
     selected_device = torch.device(device)
     model.to(selected_device)
@@ -113,6 +145,7 @@ def train_model(
         "validation_loss": [],
         "validation_accuracy": [],
     }
+    best_validation_accuracy = float("-inf")
 
     for epoch in range(epochs):
         training_loss, training_accuracy = train_one_epoch(
@@ -142,6 +175,19 @@ def train_model(
             f"validation accuracy: {validation_accuracy:.4f}"
         )
 
+        if (
+            checkpoint_path is not None
+            and class_to_idx is not None
+            and validation_accuracy > best_validation_accuracy
+        ):
+            save_checkpoint(
+                model=model,
+                class_to_idx=class_to_idx,
+                validation_accuracy=validation_accuracy,
+                checkpoint_path=checkpoint_path,
+            )
+            best_validation_accuracy = validation_accuracy
+
     return history
 
 
@@ -155,10 +201,15 @@ def main() -> None:
     parser.add_argument("--num-workers", type=int, default=0)
     parser.add_argument("--epochs", type=int, default=5)
     parser.add_argument("--learning-rate", type=float, default=1e-3)
+    parser.add_argument(
+        "--checkpoint-path",
+        type=Path,
+        default=DEFAULT_CHECKPOINT_PATH,
+    )
     parser.add_argument("--without-pretrained-weights", action="store_true")
     args = parser.parse_args()
 
-    _, _, train_loader, validation_loader = create_dataloaders(
+    train_dataset, _, train_loader, validation_loader = create_dataloaders(
         train_dir=args.train_dir,
         validation_dir=args.validation_dir,
         batch_size=args.batch_size,
@@ -173,6 +224,8 @@ def main() -> None:
         epochs=args.epochs,
         learning_rate=args.learning_rate,
         device=device,
+        class_to_idx=train_dataset.class_to_idx,
+        checkpoint_path=args.checkpoint_path,
     )
 
 
