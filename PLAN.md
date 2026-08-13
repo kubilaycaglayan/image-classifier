@@ -2,7 +2,7 @@
 
 - [x] Project structure
 - [x] Environment
-- [ ] Dataset
+- [x] Dataset
 - [ ] Data exploration
 - [ ] Transformations
 - [ ] DataLoader

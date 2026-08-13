@@ -19,6 +19,36 @@ and pencils.
 The source modules and notebook are intentionally placeholders at this stage.
 Model and training implementation will be added in later steps.
 
+## Dataset layout
+
+Place images beneath the matching class directory in both dataset splits:
+
+```text
+data/
+├── train/
+│   ├── bottle/
+│   ├── pencil/
+│   └── wristwatch/
+└── validation/
+    ├── bottle/
+    ├── pencil/
+    └── wristwatch/
+```
+
+The project uses `torchvision.datasets.ImageFolder`. It discovers class names
+from the immediate subdirectory names, sorts them alphabetically, and assigns
+the sorted positions as numeric labels. Therefore the reproducible mapping is
+`bottle: 0`, `pencil: 1`, and `wristwatch: 2`. The loader prints this mapping
+explicitly when run with:
+
+```bash
+python -m src.dataset
+```
+
+The training and validation directories must contain the same three class
+folders. Image transformations and `DataLoader` batching will be added in
+later steps.
+
 ## Environment
 
 Create and activate the project virtual environment, then install the declared
